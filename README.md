@@ -2,9 +2,9 @@ ER Diagram Website: https://erdplus.com/
 Download the erdplus file and import it to the website to see/edit the diagram
 
 Entities:
-	Doctor
-	Patient
-	Maintenance Request
+	Doctor 
+	Patient 
+	Maintenance Request 
 	Maintenance Staff
 	Hospital
 	Hospital Department
