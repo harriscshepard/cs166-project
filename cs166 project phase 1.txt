@@ -23,10 +23,9 @@ Attribute Explanation
 		TODO: Might also be included under the "Hospital" entity for future refence
 		designed so doctors search for it
 
-Constraints:
+Constraint Justification:
 	"part of"
-		Hospital Departments
-			Must be a part of exactly 1 Hospital
+		Hospital Departments must be a part of exactly 1 Hospital
 		Hospitals can have any number of hospital departments
 	"works in"
 		Hospitals can have any number of maintenance staff and doctors
@@ -36,7 +35,14 @@ Constraints:
 		Maintenance Staff can handle any number of Maintenance Requests
 		Requests can be handled by any number of Maintenance Staff
 	"makes"
-		Maintenance Requests c
-	Patient
-		Can have many appointments with the same or different doctors
-		
+		Unique Maintenance Requests can be made by 1 Doctor
+		Doctors can make any number of Maintenance Requests
+	"has"
+		Doctors can have any number of Patients
+		Patients can have any number of Doctors
+	"on waitlist for"
+		Doctors can have any number of Patients on the waitlist
+		Patients can be on the waitlist for any number of Doctors
+	"appointment with"
+		Doctors can have appointments for any number of Patients
+		Patients can have appointments for any number of Doctors
