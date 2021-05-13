@@ -1,0 +1,42 @@
+Entities:
+	Doctor
+	Patient
+	Maintenance Request
+	Maintenance Staff
+	Hospital
+	Hospital Department
+
+Attribute Explanation
+	"appointment with" relationship's attribute isActive
+		denotes whether the appointment has past or not
+		designed so you can search for past appointments
+	"appointment with" relationship attribute isEmpty
+		denotes whether the doctor's timeslot is free or not
+		TODO: this also means that patient can be NULL (check for dat)
+		
+		designed so Patients can search for available time slots
+		
+
+	"Hospital Department"'s entity attribute PatientsPerHour
+		Assumes each hospital department keeps track of patients per hour
+		Wouldn't make sense if it were per doctor
+		TODO: Might also be included under the "Hospital" entity for future refence
+		designed so doctors search for it
+
+Constraints:
+	"part of"
+		Hospital Departments
+			Must be a part of exactly 1 Hospital
+		Hospitals can have any number of hospital departments
+	"works in"
+		Hospitals can have any number of maintenance staff and doctors
+		Doctors can work in any number of Hospitals
+		Maintenance Staff can work in any number of Hospitals
+	"handles"
+		Maintenance Staff can handle any number of Maintenance Requests
+		Requests can be handled by any number of Maintenance Staff
+	"makes"
+		Maintenance Requests c
+	Patient
+		Can have many appointments with the same or different doctors
+		
