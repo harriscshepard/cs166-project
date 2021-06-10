@@ -1,0 +1,47 @@
+Update 6/9/2021 6:45PM
+	Added PBProject. The first option creates a doctor in the database!
+
+Command List
+//--..----..----..----..----..----..----..----..----..----..----..----..--//
+//--..----..----..----..----..----..----..----..----..----..----..----..--//
+//**//---------------------Project Phase 3 Linux Commands---------------------//**//
+//--..----..----..----..----..----..----..----..----..----..----..----..--//
+//--..----..----..----..----..----..----..----..----..----..----..----..--//
+        scp "cs166 project code.zip" hshep002@bolt.cs.ucr.edu:
+        ssh hshep002@bolt.cs.ucr.edu
+//in ssh:
+        scp "cs166 project code.zip" wch136-24.cs.ucr.edu:/tmp/hshep002
+        ssh hshep002@wch136-24.cs.ucr.edu
+//in wch ssh
+
+        unzip "/tmp/$USER/cs166 project code.zip" -d /extra/$USER/
+        cd /extra/$USER/
+
+      source ./compile.sh
+      source ./run.sh
+      vim ./sql/queries.sql
+      vim ./sql/insertion.sql
+      psql -h localhost -p $PGPORT $USER"_DB" < ./sql/insertion.sql
+      psql -h localhost -p $PGPORT $USER"_DB" <./sql/queries.sql
+
+      vim ./src/DBproject.java
+      :set paste
+
+
+//--..----..----..----..----..----..----..----..----..----..----..----..--//
+//--..----..----..----.Queries and SQL---..----..----..----..----..----..--//
+//--..----..----..----..----..----..----..----..----..----..----..----..--//
+phase 3 project		
+DELETE FROM	Doctor	
+WHERE	doctor_ID > 900;	
+;		
+INSERT INTO	Doctor	
+VALUES (	999	,
+	'Alex'	,
+	'Cardiology'	,
+	0	);
+		
+		
+SELECT	*	
+FROM	Doctor	
+WHERE	doctor_ID > 900	;
