@@ -175,6 +175,37 @@ public class DBproject{
 		stmt.close ();
 		return rowCount;
 	}
+	/**
+	 * Method to execute an input query SQL instruction (i.e. SELECT).  This
+	 * method issues the query to the DBMS and returns the number of results
+	 * 
+	 * @param query the input query string
+	 * @param k the column you are extracting an int from
+	 * @return an integer representation of the tuple in the 1st row and the kth coloum
+	 * @throws java.sql.SQLException when failed to execute the query
+	 */
+	public int executeQuery (String query,int k) throws SQLException {
+		//creates a statement object
+		Statement stmt = this._connection.createStatement ();
+
+		//issues the query instruction
+		ResultSet rs = stmt.executeQuery (query);
+		int ret = -1;
+
+		if(ret = rs.getInt(k))
+		{
+			stmt.close ();
+			return ret;
+		}
+		else
+		{
+			stmt.close ();
+			return ret;
+		}
+	}
+	
+
+
 	
 	/**
 	 * Method to fetch the last value from sequence. This
@@ -335,14 +366,79 @@ public class DBproject{
 	}
 
 	public static void AddPatient(DBproject esql) {//2
+		try{
+			String update = "";
+            int p_id;
+            String p_name;
+            String p_gender;
+			int p_age;
+			String p_address;
+            int p_number_appt = 0;
+
+            System.out.println("\tEnter Patient ID: $");
+            p_id = Integer.parseInt(in.readLine());
+            System.out.println("\tEnter Patient Name: $");
+            p_name = in.readLine();
+            System.out.println("\tEnter Patient Gender (M/F): $");
+            p_gender = in.readLine();
+            System.out.println("\tEnter Patient Age: $");
+            p_age = Integer.parseInt(in.readLine());
+			System.out.println("\tEnter Patient Address: $");
+            p_address = (in.readLine());
+            update = "INSERT INTO Patient VALUES ("+ p_id + ",\'"+ p_name + "\',\'"+ p_gender + "\',"+ p_age+ ",\'" + p_address + "\',"+ p_number_appt + ");";
+            System.out.println("UPDATE: " + update);
+
+            esql.executeUpdate(update);
+            //System.out.println ("total row(s): " + rowCount);
+        }
+		catch(Exception e){
+            System.err.println (e.getMessage());
+        }
 	}
 
 	public static void AddAppointment(DBproject esql) {//3
+		try{
+			String update = "";
+            int a_id;
+            String a_date;
+            String a_time_slot;
+			String a_status;
+            
+			
+
+            System.out.println("\tEnter Appointment id: $");
+            a_id = Integer.parseInt(in.readLine());
+            System.out.println("\tEnter Appointment date (MM/DD/YYYY): $");
+            a_date = in.readLine();
+            System.out.println("\tEnter Appointment timeslot (HH:MM-HH:MM): $");
+            a_time_slot = in.readLine();
+            System.out.println("\tEnter Appointment status (PA,AC,AV,WL): $");
+            a_status = (in.readLine());
+            update = "INSERT INTO Appointment VALUES ("+ a_id + ",\'"+ a_date + "\',\'"+ a_time_slot + "\',\'"+ a_status+ "\'"+ ");";
+            System.out.println("UPDATE: " + update);
+
+            esql.executeUpdate(update);
+            //System.out.println ("total row(s): " + rowCount);
+        }
+		catch(Exception e){
+            System.err.println (e.getMessage());
+        }
+
 	}
 
 
 	public static void MakeAppointment(DBproject esql) {//4
+
+		String query = "";
+		int p_id, d_id, a_id;
+		System.out.println("\tEnter Appointment id: $");
+		a_id = Integer.parseInt(in.readLine());
 		// Given a patient, a doctor and an appointment of the doctor that s/he wants to take, add an appointment to the DB
+
+
+		//get hid, kth column for hid is 2 for the 3rd column?
+		int hid = executeQuery("SELECT MAX(hid) FROM Department NATURAL JOIN Doctor NATURAL JOIN has_appointment WHERE appt_id = "+a_id ";",2)
+		System.out.println("HID: " + hid);
 	}
 
 	public static void ListAppointmentsOfDoctor(DBproject esql) {//5
