@@ -175,34 +175,7 @@ public class DBproject{
 		stmt.close ();
 		return rowCount;
 	}
-	/**
-	 * Method to execute an input query SQL instruction (i.e. SELECT).  This
-	 * method issues the query to the DBMS and returns the number of results
-	 * 
-	 * @param query the input query string
-	 * @param k the column you are extracting an int from
-	 * @return an integer representation of the tuple in the 1st row and the kth coloum
-	 * @throws java.sql.SQLException when failed to execute the query
-	 */
-	public int executeQuery (String query,int k) throws SQLException {
-		//creates a statement object
-		Statement stmt = this._connection.createStatement ();
 
-		//issues the query instruction
-		ResultSet rs = stmt.executeQuery (query);
-		int ret = -1;
-
-		if(ret = rs.getInt(k))
-		{
-			stmt.close ();
-			return ret;
-		}
-		else
-		{
-			stmt.close ();
-			return ret;
-		}
-	}
 	
 
 
@@ -345,7 +318,8 @@ public class DBproject{
             d_department = in.readLine();
             System.out.println("\tEnter Department id: $");
             d_did = Integer.parseInt(in.readLine());
-            update = "INSERT INTO Doctor VALUES ("+ d_id + ",\'"+ d_name + "\',\'"+ d_department + "\',"+ d_did+ ");";
+			update = "INSERT INTO Doctor (doctor_ID, name, specialty, did) SELECT "+ d_id+", \'"+ d_name+"\', \'"+d_department+"\', "+ d_did +" WHERE NOT EXISTS ( SELECT 1 FROM Doctor WHERE  doctor_ID = "+d_id+")";
+            //update = "INSERT INTO Doctor VALUES ("+ d_id + ",\'"+ d_name + "\',\'"+ d_department + "\',"+ d_did+ ");";
             System.out.println("UPDATE: " + update);
 
             esql.executeUpdate(update);
@@ -385,8 +359,9 @@ public class DBproject{
             p_age = Integer.parseInt(in.readLine());
 			System.out.println("\tEnter Patient Address: $");
             p_address = (in.readLine());
-            update = "INSERT INTO Patient VALUES ("+ p_id + ",\'"+ p_name + "\',\'"+ p_gender + "\',"+ p_age+ ",\'" + p_address + "\',"+ p_number_appt + ");";
-            System.out.println("UPDATE: " + update);
+            //update = "INSERT INTO Patient VALUES ("+ p_id + ",\'"+ p_name + "\',\'"+ p_gender + "\',"+ p_age+ ",\'" + p_address + "\',"+ p_number_appt + ");";
+            update = "INSERT INTO Patient (patient_ID, name, gtype, age, address, number_of_appts) SELECT "+ p_id+", \'"+p_name+"\', \'"+p_gender+"\', "+p_age+", \'"+p_address+"\', "+ p_number_appt +" WHERE NOT EXISTS ( SELECT 1 FROM Patient WHERE patient_ID = "+p_id+");";
+			System.out.println("UPDATE: " + update);
 
             esql.executeUpdate(update);
             //System.out.println ("total row(s): " + rowCount);
@@ -414,7 +389,8 @@ public class DBproject{
             a_time_slot = in.readLine();
             System.out.println("\tEnter Appointment status (PA,AC,AV,WL): $");
             a_status = (in.readLine());
-            update = "INSERT INTO Appointment VALUES ("+ a_id + ",\'"+ a_date + "\',\'"+ a_time_slot + "\',\'"+ a_status+ "\'"+ ");";
+            //update = "INSERT INTO Appointment VALUES ("+ a_id + ",\'"+ a_date + "\',\'"+ a_time_slot + "\',\'"+ a_status+ "\'"+ ");";
+			update = "INSERT INTO Appointment (appnt_ID, adate, time_slot, status) SELECT "+ a_id+", \'"+a_date+"\', \'"+a_time_slot+"\', \'"+ a_status + "\' WHERE NOT EXISTS ( SELECT 1 FROM Appointment WHERE appnt_ID = "+ a_id+");";
             System.out.println("UPDATE: " + update);
 
             esql.executeUpdate(update);
@@ -428,17 +404,116 @@ public class DBproject{
 
 
 	public static void MakeAppointment(DBproject esql) {//4
+		try{
+			// Given a patient, a doctor and an appointment of the doctor that s/he wants to take, add an appointment to the DB
+			//current function:
+			// take appointment id -> find appointment and hospital using has_appointment ->
+			String query = "";
+			String update = "";
+			int p_id = 999; //patient
+			int d_id= 128; //doctor
+			int a_id = 96;  //appointment
+			String p_name_search_term = "";
+			String h_id = "0"; //hospital, is string because its derived from result
+			List<List<String>> result; //result from executeQueryAndReturnResult
+			List<String> first_tuple; //the first tuple from the result table
+	
+			//Ask for Appointment id
+			System.out.println("\tEnter Appointment id: $");
+			a_id = Integer.parseInt(in.readLine());
 
-		String query = "";
-		int p_id, d_id, a_id;
-		System.out.println("\tEnter Appointment id: $");
-		a_id = Integer.parseInt(in.readLine());
-		// Given a patient, a doctor and an appointment of the doctor that s/he wants to take, add an appointment to the DB
+			System.out.println("\tEnter Doctor id: $");
+			d_id = Integer.parseInt(in.readLine());
+		
+			
+
+			
+
+			//find and get appointment status from a_id
+			query = "SELECT * FROM Appointment as A CROSS JOIN has_appointment as H WHERE A.appnt_ID = H.appt_id AND A.appnt_ID = "+a_id+";";
+			result = esql.executeQueryAndReturnResult(query);
+			first_tuple = result.get(0);
+			String status = first_tuple.get(3); //a_id,date,time_slot,status
+			System.out.println("QUERY:" + query);
+			System.out.println("STATUS: " + status);
+
+			if((status.equals("AC"))||(status.equals("AV"))||(status.equals("WL")))
+			{
+				//verify p_id
+				System.out.println("\tEnter Patient id: $(-1 if not known");
+				p_id = Integer.parseInt(in.readLine());
+				if(p_id == -1)
+				{
+
+				}
+				else{
+
+				}
+				
 
 
-		//get hid, kth column for hid is 2 for the 3rd column?
-		int hid = executeQuery("SELECT MAX(hid) FROM Department NATURAL JOIN Doctor NATURAL JOIN has_appointment WHERE appt_id = "+a_id ";",2)
-		System.out.println("HID: " + hid);
+				//update patients, increment num appointments
+				update = "UPDATE Patient SET number_of_appts = number_of_appts + 1 WHERE patient_ID = "+p_id+";";
+				esql.executeUpdate(update);
+
+				//add a tuple to 'has_appointment' if not already there
+				update = "INSERT INTO has_appointment (appt_id, doctor_id) "+"SELECT "+a_id+", "+d_id + " WHERE NOT EXISTS (" + "SELECT 1 FROM has_appointment WHERE appt_id = "+a_id+" AND doctor_id = "+d_id+");";
+				System.out.println("UPDATE: " + update);//
+				esql.executeUpdate(update);
+				
+				//find and get hid from Department->Doctor->has_appointment from a_id
+				query = "SELECT MAX(hid) FROM Department as D CROSS JOIN Doctor as O CROSS JOIN has_appointment as H WHERE D.dept_ID = O.did AND O.doctor_ID = H.doctor_id AND appt_id = "+a_id+";";
+				result = esql.executeQueryAndReturnResult(query);
+				first_tuple = result.get(0);
+				h_id = first_tuple.get(0);
+				System.out.println("QUERY:" + query);
+				System.out.println("HID: " + h_id);
+
+				//add a tuple to 'searches' if not already there
+				update = "INSERT INTO searches (hid,pid,aid) SELECT "+h_id+", "+p_id+", "+a_id + " WHERE NOT EXISTS ( SELECT 1 FROM searches WHERE hid ="+h_id+" AND pid = "+p_id+" AND aid =" + a_id + ");";
+				System.out.println("UPDATE: " + update);
+				esql.executeUpdate(update);
+			}
+			else if(status.equals("PA"))
+			{
+				System.out.println("PA: " + status);
+				//do nothing?
+			}
+			else{
+				//error? status is not valid
+			}
+
+			if(status.equals("AC"))
+			{
+				
+				//update appointment to WL
+			
+				update = "UPDATE Appointment SET _STATUS = \'WL\' WHERE appnt_ID = " + a_id +";";
+				esql.executeUpdate(update);
+			}
+			else if(status.equals("AV"))
+			{
+				update = "UPDATE Appointment SET _STATUS = \'AC\' WHERE appnt_ID = " + a_id +";";
+				esql.executeUpdate(update);
+				//update appointment to AC
+				
+			}
+			else if(status.equals("WL"))
+			{
+				update = "UPDATE Appointment SET _STATUS = \'WL\' WHERE appnt_ID = " + a_id +";";
+				esql.executeUpdate(update);
+				//dont change status
+				
+			}
+			
+		}
+
+
+
+		catch(Exception e){
+            System.err.println (e.getMessage());
+        }
+
 	}
 
 	public static void ListAppointmentsOfDoctor(DBproject esql) {//5
